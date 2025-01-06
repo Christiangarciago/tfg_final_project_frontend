@@ -1,32 +1,32 @@
 <template>
     <nav class="navbar">
         <div class="navbar-brand">
-            <a class="navbar-item" href="#">
+            <RouterLink class="navbar-item" to="/">
                 MyApp
-            </a>
+            </RouterLink>
         </div>
-        <div class="navbar-menu">
+        <div class="navbar-menu" v-if="userPinia.logged">
             <div class="navbar-start">
                 <RouterLink class="navbar-item" to="/">Home</RouterLink>
                 <RouterLink class="navbar-item" to="/upload">Upload Photos</RouterLink>
-                <RouterLink class="navbar-item" to="/upload">Test</RouterLink>
+                <!--<RouterLink class="navbar-item" to="/upload">Test</RouterLink>-->
             </div>
+            
         </div>
-        <div class="navbar-end">
-            <UserLoged />
+        <div class="navbar-end" v-if="userPinia.logged">
+                <UserLoged />
             </div>
+        
     </nav>
 </template>
 
-<script>
+<script setup>
+import { useSession } from '../store/user';
 import UserLoged from './UserLoged.vue';
 
-export default {
-    name: 'NavBarMenu',
-    components: {
-        UserLoged
-    }
-}
+
+const userPinia = useSession();
+
 </script>
 
 <style scoped>

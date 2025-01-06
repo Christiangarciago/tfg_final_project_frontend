@@ -6,8 +6,9 @@
             <div v-if="photoList.length === 0">Not photos updated</div>
             <div v-else class="photo-gallery">
                 <div v-for="photo in photoList" :key="photo.id" class="photo-item">
-                    <img :src="photo.thumbnailUrl" :alt="photo.title">
-                    <p>{{ photo.title }}</p>
+                  <RouterLink :to="'/photoDetail/' + photo.id">  
+                  <img :src="serverUrl + photo.image" :alt="photo.title"/>
+                  </RouterLink>
                 </div>
             </div>
         </div>
@@ -19,6 +20,7 @@
 //import api from "../services/api";
 import { useSession } from "../store/user";
 import axios from 'axios';
+import { serverUrl } from "@/global";
 
 
 export default {
@@ -29,6 +31,14 @@ export default {
         loading: true,
     };
   },
+  computed: {
+    serverUrl() {
+      return serverUrl;
+    },
+  },
+  
+
+
   async created() {
     const userPinia = useSession();
     //const headers = { "Authorization": userPinia.getToken };
@@ -52,14 +62,35 @@ export default {
 
 <style>
 .photo-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 10px;
+  padding: 20px;
 }
 
 .photo-item {
   border: 1px solid #ccc;
-  padding: 1rem;
   text-align: center;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  
 }
+
+img {
+  /*max-width: 50%;
+  height: auto;*/
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.image-item {
+
+}
+.image-item img {
+  
+}
+
+
 </style>

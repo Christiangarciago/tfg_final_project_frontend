@@ -1,11 +1,17 @@
 import { defineStore } from 'pinia'
 import VueJwtDecode from 'vue-jwt-decode';
 import router from '@/router/index';
+
+
+
 export const useSession = defineStore('user', {
     state: () => {
         return {
             logged: false,
             username: '',
+            email: '',
+            firstName: '',
+            lastName: '',
             token: '',
         }
     },
@@ -13,18 +19,23 @@ export const useSession = defineStore('user', {
     actions:{
         setUserData(payload) {
             let payload_parsed = '';
-            console.log(payload.data.access);
             payload_parsed = VueJwtDecode.decode(payload.data.access);
             console.log(payload_parsed);
             this.logged = true;
             this.username = payload_parsed.username;
+            this.email = payload_parsed.email;
+            this.firstName = payload_parsed.first_name;
+            this.lastName = payload_parsed.last_name;
             this.token = payload.data.access;
+            localStorage.setItem('token', this.token);
           },
           clearData() {
             this.logged = false;
-            this.username = '',
-            this.token = ''
+            this.username = '';
+            this.token = '';
+            localStorage.removeItem('token');
             router.push('/login');
+            
           },
 
           setMessage(msg) {
@@ -40,7 +51,6 @@ export const useSession = defineStore('user', {
           return this.username;
         },
         getToken() {
-            console.log(this.token);
           return this.token;
         },
         getMessage() {

@@ -1,11 +1,20 @@
 <template>
    <div class="user" v-if="userPinia.isLogged">
-        <img class="user__image" src="" alt="">
+        <div class="user__image">
+          <font-awesome-icon icon="user" class="defaultUserPhoto"/>
+        </div>
+        <!--<img class="user__image" src="" alt="">-->
         <div class="user__info">
-            {{ userPinia.getUserName }}
-            <button class="button button-logout" @click="logout">Logout  
-                <img src="" alt="Logout" />
-            </button>
+         <RouterLink to="/UserProfile" class="navbar-item">
+          <span class="username">{{ userPinia.getUserName }}</span>
+        </RouterLink>
+          
+            <a class="logout-button" @click="logout"> 
+              Logout 
+              <font-awesome-icon icon="arrow-right-from-bracket" class="logout-icon"/>
+            </a>
+
+            
         </div>
     </div>
     <div v-if="!userPinia.isLogged">
@@ -14,6 +23,7 @@
 </template>
 
 <script setup>
+    import { RouterLink } from "vue-router";
     import { useSession } from "../store/user";
     const userPinia = useSession();
 
@@ -29,14 +39,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-
+}
   // Image
   .user__image {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background-color: red;
-    padding: 10px;
+    background-color: lightgray;
+    padding: 4px;
+  }
+
+  .defaultUserPhoto {
+    font-size: 38px;
+    color: #2c3e50;
   }
 
   // Rest of the user info
@@ -44,32 +59,24 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    font-size: 0.75rem;
+    font-size: 15px;
     font-weight: bold;
   }
 
-  // Logout button
-  .button-logout {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 5px 10px;
-    background-color: red;
-    color: white;
-    cursor: pointer;
-
-    &:hover {
-      background-color: red;
-    }
-
-    img {
-      width: 10px;
-      height: 10px;
-    }
-
-    
-  }
+.button-logout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 5px 10px;
+  background-color: lightgray;
+  color: white;
+  cursor: pointer;
+}
+  
+.button-logout > img {
+    width: 15px;
+    height: 15px;
 }
 
 .navbar-item {
@@ -82,5 +89,28 @@
     text-decoration: underline;
 }
 
+.logout-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+
+.logout-icon{
+  font-size: 20px;
+}
+
+.logout-button:hover{
+  text-decoration: underline;
+  color: red;
+}
+
+.username{
+  font-size: 15px;
+  padding: 0px;
+}
 
 </style>

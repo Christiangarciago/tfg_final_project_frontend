@@ -1,19 +1,26 @@
 <template>
     <h1>Login</h1>
     <div class="container">
-    <form @submit.prevent="login">
-        <div class="login-form-item">
-            <label for="username">Username</label>
-            <input v-model="user.username" id="username"/>
-        </div>
-        <div class="login-form-item">
-            <label for="password">Password</label>
-            <input v-model="user.password" type="password" id="password"/>
-        </div>
-        <button type="submit" class="button">Login</button>
-        <p v-if="error" class="error">Please fill in all fields</p>
-    </form>
-   
+    <div>
+        <form @submit.prevent="login">
+            <div class="login-form-item">
+                <!--<label for="username">Username</label>-->
+                <input class="form-control" v-model="user.username" id="username" placeholder="Username" />
+            </div>
+            <div class="login-form-item">
+                <!--<label for="password">Password</label>-->
+                <input class="form-control" v-model="user.password" type="password" id="password" placeholder="Password"/>
+            </div>
+            <button type="submit" class="btn btn-success">Log in</button>
+            <p v-if="error" class="error">Please fill in all fields</p>
+            </form>
+    </div>
+    <div>
+        <p><br/> Or sign in to start using the application <br/></p>
+    </div>
+    <div class="signin-item">
+        <RouterLink to="/createUser" class="btn btn-primary">Sign in</RouterLink>
+    </div>
 </div>
 </template>
 
@@ -82,6 +89,17 @@ const login = async () => {
   border: 1px solid #ccc;
   border-radius: 4px;
   max-width: 300px;
+}
+
+.signin-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-control{
+    display: inline-block;
 }
 
 
