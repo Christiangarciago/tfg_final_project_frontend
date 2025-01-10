@@ -12,8 +12,13 @@
                 <input class="form-control" v-model="user.password" type="password" id="password" placeholder="Password"/>
             </div>
             <button type="submit" class="btn btn-success">Log in</button>
-            <p v-if="error" class="error">Please fill in all fields</p>
+            
+            
+
             </form>
+    </div>
+    <div v-if="error" class="alert alert-danger error-message">
+        {{ errorMessage }}
     </div>
     <div>
         <p><br/> Or sign in to start using the application <br/></p>
@@ -37,28 +42,31 @@ const user = ref({
     password: ''
 });
 const error = ref(false);
+const errorMessage = ref('');
+
 
 const login = async () => {
-    console.log(user.value);
     if (user.value.username === '' || user.value.password === '') {
         error.value = true;
+        errorMessage.value = 'The fields are required';
         return;
     }
     
-
-
     //const headers = { authorization: userPinia.getToken };
-
-    await axios.post('http://127.0.0.1:8000/auth/login/', user.value).then((response) => {
-        console.log(response);
+    try{
+        const response = await axios.post('http://127.0.0.1:8000/auth/login/', user.value);
         if (response.status === 200) {
-        //if (response) {
             userPinia.setUserData(response);
-            console.log(response);
-            
             router.push('/');
+        }else{
+            error.value = true;
+            errorMessage.value = 'Login failed, please try again';
+
         }
-    });
+    }catch(e){
+        error.value = true;
+        errorMessage.value = 'Login failed, please check your credentials and try again';
+    }
     
 }
 
@@ -100,6 +108,10 @@ const login = async () => {
 
 .form-control{
     display: inline-block;
+}
+
+.error-message{
+    margin-top: 25px;
 }
 
 

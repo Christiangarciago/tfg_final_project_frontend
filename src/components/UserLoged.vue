@@ -1,20 +1,18 @@
 <template>
    <div class="user" v-if="userPinia.isLogged">
-        <div class="user__image">
+        <div class="user__image" v-if="!userPinia.userAvatar">
           <font-awesome-icon icon="user" class="defaultUserPhoto"/>
         </div>
-        <!--<img class="user__image" src="" alt="">-->
+        <img v-else class="user__image" :src="serverUrl + userPinia.userAvatar" alt="">
         <div class="user__info">
-         <RouterLink to="/UserProfile" class="navbar-item">
-          <span class="username">{{ userPinia.getUserName }}</span>
-        </RouterLink>
+          <RouterLink to="/UserProfile" class="navbar-item">  
+            <span class="username">{{ userPinia.getUserName }}</span>
+          </RouterLink>
           
-            <a class="logout-button" @click="logout"> 
+          <a class="logout-button" @click="logout"> 
               Logout 
               <font-awesome-icon icon="arrow-right-from-bracket" class="logout-icon"/>
-            </a>
-
-            
+          </a>
         </div>
     </div>
     <div v-if="!userPinia.isLogged">
@@ -25,6 +23,7 @@
 <script setup>
     import { RouterLink } from "vue-router";
     import { useSession } from "../store/user";
+    import { serverUrl } from '@/global';
     const userPinia = useSession();
 
     function logout() {
@@ -48,6 +47,10 @@
     background-color: lightgray;
     padding: 4px;
   }
+
+  img.user__image{
+    padding: 0;
+}
 
   .defaultUserPhoto {
     font-size: 38px;

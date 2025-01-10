@@ -84,6 +84,17 @@ async function updateUserInfo() {
     try {
         await axios.put(`${serverUrl}/person/${user_id}/`, formData, { headers });
         userPinia.username = editUsername.value;
+        userPinia.email = editEmail.value;
+        userPinia.firstName = editFirstName.value;
+        userPinia.lastName = editLastName.value;
+        if (editPassword.value){
+            userPinia.password = editPassword.value;
+        }
+        if (uploadUserAvatar.value){
+            userPinia.userAvatar = uploadUserAvatar.value;
+        }
+        
+
         // Update other user info as needed
         router.push('/'); // Redirect to home or another page after saving
     } catch (error) {

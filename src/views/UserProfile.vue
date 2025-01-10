@@ -2,10 +2,11 @@
     <div class="user-profile container">
         <h1>User Profile</h1>
         <div v-if="userPinia.logged" class="row">
-            <div class="col-lg-5 ">
-                <div class="user__image">
+            <div class="col-lg-5">
+                <div class="user__image" v-if="!userPinia.userAvatar">
                     <font-awesome-icon icon="user" class="defaultUserPhoto"/>
                 </div>
+                <img v-else class="user__image" :src="serverUrl + userPinia.userAvatar" alt="">
             </div>
             <div class="profile-info col-lg-7">
                 <p><strong>Username:</strong> {{ userPinia.username }}</p>
@@ -20,6 +21,7 @@
 
 <script setup>
 import { useSession } from "../store/user";
+import { serverUrl } from '@/global';
 
 const userPinia = useSession();
 </script>
@@ -39,6 +41,12 @@ const userPinia = useSession();
     padding: 10px;
     display: inline-block;
   }
+
+
+img.user__image{
+    padding: 0;
+}
+
 
 .defaultUserPhoto {
     font-size: 200px;
@@ -62,4 +70,6 @@ const userPinia = useSession();
 .btn-primary:hover {
     background-color: #0056b3;
 }
+
+
 </style>

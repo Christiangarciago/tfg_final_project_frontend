@@ -1,65 +1,91 @@
 <template>
-    <div>
+    <div class="container">
       <h1>Upload Photo</h1>
-      <form @submit.prevent="uploadPhoto">
+      <div class="row justify-content-md-center">
+        <div class="col-lg-6">
+        <form @submit.prevent="uploadPhoto">
 
         <div>
           <label for="image">Image</label>
-          <input type="file" id="image" @change="onFileChange" required />
+          <input class="form-control" type="file" id="image" @change="onFileChange" required />
         </div>
-        <button type="submit">Upload</button>
+        <div class="submit_button">
+          <button class="btn btn-primary" type="submit" :disabled="uploading">Upload</button>
+        </div>
       </form>
       <div v-if="message">{{ message }}</div>
     </div>
+    </div>
+    </div>
   </template>
   
-  <script>
+  <script setup>
   import api from "../services/api";
   import { useSession } from "../store/user";
+  import { ref } from "vue";
   
-  export default {
-    data() {
-      return {
-        image: null,
-        uploading: false,
-        message: "",
-      };
-    },
-    methods: {
-      onFileChange(event) {
-        this.image = event.target.files[0];
-      },
-      async uploadPhoto() {
-        const userPinia = useSession();
-        if (!this.image) {
-          this.message = "Please select an image.";
-          return;
-        }
-        
-        console.log(this.image);
+  
+  const userPinia = useSession();
 
-        this.uploading = true;
-        const formData = new FormData();
-        
-        formData.append('image', this.image);
-        console.log(formData);
-  
-        try {
-          await api.post("http://127.0.0.1:8000/photos/", formData, {
-            headers: { "Content-Type": "multipart/form-data",
-              "Authorization": "Bearer " + userPinia.getToken
-             },
-          });
-          this.message = "Photo uploaded successfully!";
-          this.title = "";
-          this.image = null;
-        } catch (error) {
-          console.error("Error uploading photo:", error);
-          this.message = "Failed to upload photo.";
-        } finally {
-          this.uploading = false;
-        }
-      },
-    },
-  };
+  const image = ref(null);
+  const message = ref('');
+  const uploading = ref(false);
+
+
+
+  function onFileChange(event) {
+    const fileMaxSize = 1024 * 1024 * 10;
+    const imageToUpload = event.target.files[0];
+
+    console.log(fileMaxSize);
+    console.log(imageToUpload.size);
+    
+    if(imageToUpload.size > fileMaxSize){
+      message.value = "The file is too large. Max size is 10MB.";
+      image.value = null;
+    }else{
+      image.value = imageToUpload;
+      message.value = "";
+    }
+  }
+
+
+  async function uploadPhoto() {
+    
+    if (!image.value) {
+      message.value = "Please select an image.";
+      return;
+    }
+    
+    uploading.value = true;
+    const formData = new FormData();
+    
+    formData.append('image', image.value);
+    
+    try {
+      await api.post("http://127.0.0.1:8000/photos/", formData, {
+        headers: { "Content-Type": "multipart/form-data",
+          "Authorization": "Bearer " + userPinia.getToken
+          },
+      });
+      message.value = "Photo uploaded successfully!";
+      image.value = null;
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      message.value = "Failed to upload photo.";
+    } finally {
+      uploading.value = false;
+    }
+  }
   </script>
+
+  <style scoped>
+  
+  .submit_button{
+    margin-top: 20px;
+  }
+  
+  
+  
+  </style>
+  ```
