@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Photo Gallery</h1>
-        <div v-if="loading">Loading...</div>
+        <!--<div v-if="loading">Loading...</div>
         <div v-else>
             <div v-if="photoList.length === 0">Not photos updated</div>
             <div v-else class="photo-gallery">
@@ -11,36 +11,26 @@
                   </RouterLink>
                 </div>
             </div>
-        </div>
+        </div>-->
+        <PhotoGallery :loading="loading" :photoList="photoList" :serverUrl="serverUrl" />
     </div>
 </template>
 
-<script>
+<script setup>
 //import { RouterLink } from "vue-router";
 //import api from "../services/api";
+import { ref, onMounted } from "vue";
 import { useSession } from "../store/user";
 import axios from 'axios';
 import { serverUrl } from "@/global";
+import PhotoGallery from "@/components/PhotoGallery.vue";
+
+const userPinia = useSession();
+const photoList = ref([]);
+const loading = ref(true);
 
 
-export default {
-  name: "HomeHome",
-  data() {
-    return {
-        photoList: [],
-        loading: true,
-    };
-  },
-  computed: {
-    serverUrl() {
-      return serverUrl;
-    },
-  },
-  
-
-
-  async created() {
-    const userPinia = useSession();
+  async function fetchPhotos() {
     //const headers = { "Authorization": userPinia.getToken };
     //console.log(headers);
     try {
@@ -50,47 +40,20 @@ export default {
         },
       }); 
       console.log(response);
-      this.photoList = response.data;
+      photoList.value = response.data;
     } catch (error) {
       console.error("Error fetching photos:", error);
     } finally {
-      this.loading = false;
+      loading.value = false;
     }
-  },
-};
+  }
+
+  onMounted(() => {
+    fetchPhotos();
+});
+
 </script>
 
 <style>
-.photo-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  gap: 10px;
-  padding: 20px;
-}
-
-.photo-item {
-  border: 1px solid #ccc;
-  text-align: center;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  
-}
-
-img {
-  /*max-width: 50%;
-  height: auto;*/
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-.image-item {
-
-}
-.image-item img {
-  
-}
-
 
 </style>

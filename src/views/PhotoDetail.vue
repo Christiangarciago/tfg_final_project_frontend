@@ -7,21 +7,16 @@
                     <img :src="serverUrl + photo.image" alt="" />
                 </div>
                 <div>
-                    
-                    
-                        <div id="label-container" class="d-flex flex-wrap gap-2">
-                            <span v-for="(label, index) in labels" :key="index"
-                                class="badge bg-secondary d-flex align-items-center gap-2" style="padding-right: 8px;">
-                                {{ label }}
-                                <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Delete"
-                                    @click="deleteLabel(index)" style="font-size: smaller;">
+                    <div id="label-container" class="d-flex flex-wrap gap-2">
+                        <span v-for="(label, index) in labels" :key="index"
+                            class="badge bg-secondary d-flex align-items-center gap-2" style="padding-right: 8px;">
+                            {{ label }}
+                            <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Delete"
+                                @click="deleteLabel(index)" style="font-size: smaller;">
 
-                                </button>
-                            </span>
-
-
-                        </div>
-                    
+                            </button>
+                        </span>
+                    </div>
                 </div>
                 <div class="mt-3">
                     <input type="text" v-model="newLabel" class="form-control" placeholder="Enter a new label"
@@ -79,6 +74,15 @@
 
 
                 </div>
+
+                <div>
+            <label for="albumSelect">Select Album:</label>
+            <select id="albumSelect" class="form-select" v-model="selectedAlbumId" @change="updatePhotoAlbum" multiple>
+                <option v-for="album in albums" :key="album.id" :value="album.id">
+                    {{ album.name }}
+                </option>
+            </select>
+        </div>
                 
                 <button class="btn btn-success mt-3" @click="savePhoto">Save</button>
             </div>
@@ -111,6 +115,10 @@ const exifInfo = ref({});
 const center = ref({ lat: 0, lng: 0 });
 const map = ref(null);
 const marker = ref(null);
+const albums = ref([]);
+const selectedAlbumId = ref(null);
+
+const headers = { Authorization: "Bearer " + userPinia.getToken }
 
 function parseExifString(exifString) {
     try {
@@ -130,10 +138,9 @@ const customIcon = L.icon({
 });
 
 
+async function fetchPhoto() {
 
-onMounted(async () => {
-
-    const headers = { Authorization: "Bearer " + userPinia.getToken }
+    
     const photoId = route.params.id;
     await axios.get(`${serverUrl}/photos/${photoId}`, { headers }).then(async (response) => {
         photo.value = response.data;
@@ -182,17 +189,38 @@ onMounted(async () => {
             photo.value.latitude = position.lat;
             photo.value.longitude = position.lng;
         });
-
-
         
-        console.log(center.value);
-
-        
-
-        
+        selectedAlbumId.value = photo.value.album;
     });
 
+
+
+
+
+
+}
+
+async function fetchAlbums() {
+    await axios.get(`${serverUrl}/albums/`, { headers }).then(async (response) => {
+        console.log(response.data);
+        albums.value = response.data;
+    }).catch((error) => {
+        console.error('Error fetching albums:', error);
+        
+    
+    });
+}
+
+
+
+
+onMounted(() => {
+    fetchPhoto();
+    fetchAlbums();
 });
+
+
+
 
 // Add a new label
 const addLabel = () => {
@@ -216,7 +244,8 @@ const savePhoto = async () => {
         
         labels: JSON.stringify(labels.value),
         latitude: photo.value.latitude,
-        longitude: photo.value.longitude
+        longitude: photo.value.longitude,
+        album: selectedAlbumId.value
     };
     await axios.put(`${serverUrl}/photos/${photoId}/`, updatedData, { headers }).then((response) => {
         console.log('Photo updated successfully:', response.data);

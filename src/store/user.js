@@ -13,6 +13,8 @@ export const useSession = defineStore('user', {
             firstName: '',
             lastName: '',
             token: '',
+            userAvatar: '',
+            userId:'',
         }
     },
 
@@ -27,6 +29,8 @@ export const useSession = defineStore('user', {
             this.firstName = payload_parsed.first_name;
             this.lastName = payload_parsed.last_name;
             this.token = payload.data.access;
+            this.userAvatar = payload_parsed.user_avatar;
+            this.userId = payload_parsed.user_id;
             localStorage.setItem('token', this.token);
           },
           clearData() {
